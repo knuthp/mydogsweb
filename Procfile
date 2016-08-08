@@ -1,1 +1,1 @@
-web: python mydogsweb.py
+web: gunicorn mydogsweb:app --log-file -
