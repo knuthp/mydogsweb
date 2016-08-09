@@ -7,6 +7,9 @@ from flask_bootstrap import Bootstrap
 from flask.templating import render_template
 from flask_nav import Nav
 from flask_nav.elements import Navbar, View, Link, Subgroup
+from flask.helpers import send_file
+import imageview
+from flask.wrappers import Response
 
 
 app = Flask(__name__)
@@ -59,6 +62,15 @@ def dogcam():
     images = [{'name' : 'myImageName2', 'dateTime' : '2016-08-09 13:32:24.1'}]
     return render_template('dogcam.html', images=images)
 
+@app.route('/latest')
+@login_required
+def latestImage():
+    imageService = imageview.ImageService()
+    ret = imageService.getLatest()
+    data = ret['content']
+    print(len(data))
+    return Response(data, mimetype='image/jpg')
+    #return send_file('img.jpg', mimetype='image/jpg') 
 
 
 if __name__ == '__main__':
