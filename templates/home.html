@@ -1,0 +1,17 @@
+{% extends "bootstrap/base.html" %}
+{% block title %}Home{% endblock %}
+
+{% block navbar %}
+{{nav.mynavbar.render()}}
+{% endblock %}
+
+{% block content %}
+    <h1>Welcome to MyDogs application</h1>
+    <ul>
+      <li><a href="dogcam">DogCam</a></li>
+<!--       <li><a href="admin">Admin</a></li>  -->
+      <li><a href="login">Login</a></li>
+      <li><a href="logout">Logout</a></li>
+    </ul>
+
+{% endblock %}

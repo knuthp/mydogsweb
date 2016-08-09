@@ -1,0 +1,14 @@
+{% extends "bootstrap/base.html" %}
+{% block title %}DogCam{% endblock %}
+
+{% block navbar %}
+{{nav.mynavbar.render()}}
+{% endblock %}
+
+{% block content %}
+    <h1>DogCam images</h1>
+    {% for img in images %}
+    <h2>{{ img['name'] }}</h2>
+	{% endfor %}
+    
+{% endblock %}
