@@ -3,3 +3,4 @@ hloc/*
 .project
 .pydevproject
 **.pyc
+.settings/
