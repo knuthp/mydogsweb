@@ -31,6 +31,7 @@ nav.init_app(app)
 
 logging.getLogger().setLevel(logging.INFO)
 
+imageService = imageview.ImageService()
 dogCamSettings = DogCamSettings()
 
 
@@ -65,8 +66,11 @@ def root():
 @app.route('/dogcam')
 @login_required
 def dogcam():
+    dates = imageService.getAvailableDates()
+    datesString = [imageService.dateToIsoString(x) for x in dates]
+    latest = imageService.getLatest()['path']
     images = [{'name' : 'myImageName2', 'dateTime' : '2016-08-09 13:32:24.1'}]
-    return render_template('dogcam.html', images=images)
+    return render_template('dogcam.html', images=images, dates=datesString, latest=latest)
 
 
 @app.route('/dogcam/settings')
@@ -88,12 +92,9 @@ def apidogcamsettings():
 @app.route('/latest')
 @login_required
 def latestImage():
-    imageService = imageview.ImageService()
-    ret = imageService.getLatest()
-    data = ret['content']
-    print(len(data))
+    latest = imageService.getLatest()
+    data = imageService.getImage(latest['path'])
     return Response(data, mimetype='image/jpg')
-    #return send_file('img.jpg', mimetype='image/jpg') 
 
 def get_sec(time_str):
     h, m, s = time_str.split(':')

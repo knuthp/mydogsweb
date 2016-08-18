@@ -14,18 +14,17 @@ class ImageService:
     def getLatest(self):
         datesSorted = sorted(self.getAvailableDates(), reverse=True);
         latestDay = datesSorted[0]
-        files = self.dbx.files_list_folder('/' + self.__dateToIsoString(latestDay)).entries
+        files = self.dbx.files_list_folder('/' + self.dateToIsoString(latestDay)).entries
         sortedList = sorted(files, key=lambda r: r.name, reverse=True)
         latestFileMeta = sortedList[0]
-        res = self.dbx.files_download(latestFileMeta.path_lower)[1]
         return {'name' : latestFileMeta.name,
-                'path' : latestFileMeta.path_lower,
-                'content' : res.content}
+                'path' : latestFileMeta.path_lower
+                }
 
 
 
     def getForDay(self, day):
-        dayString = self.__dateToIsoString(day)
+        dayString = self.dateToIsoString(day)
         try :
             files = self.dbx.files_list_folder('/' + dayString).entries
             filenames = [x.path_lower for x in files]
@@ -48,9 +47,11 @@ class ImageService:
         
 
 
-    def __dateToIsoString(self, day):
+    def dateToIsoString(self, day):
         return str(day.year) + '-' + str(day.month).zfill(2) + '-' + str(day.day).zfill(2)
     
 if __name__ == '__main__':
     imageService = ImageService()
+    print(imageService.getAvailableDates())
+    
     print(imageService.getLatest()['path'])

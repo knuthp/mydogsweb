@@ -6,11 +6,13 @@
 {% endblock %}
 
 {% block content %}
-    <h1>DogCam images</h1>
-    {% for img in images %}
-    <h2>{{ img['name'] }}</h2>
-	{% endfor %}
+    <h1>From {{latest}}</h1>
 	
 	<img src="/latest" alt="latestImage">
+	<ul>
+    {% for date in dates %}
+    <li>{{ date }}</li>
+	{% endfor %}
+	</ul>
     
 {% endblock %}
