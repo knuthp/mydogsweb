@@ -11,6 +11,7 @@ import imageview
 from flask.wrappers import Response
 import logging
 from dogcamsettings import DogCamSettings
+import datetime
 
 
 app = Flask(__name__)
@@ -87,7 +88,14 @@ def apidogcamsettings():
     dogCamSettings.publishChanges({'doRecord' : record, 'interval' : interval})
     logging.info("Updated settings doRecord={0}, interval={1}".format(record, interval))
     return "OK"
-    
+
+@app.route('/api/dogcam/images/<dayString>', methods=['DELETE'])
+@login_required
+def apidogcamimagesdelete(dayString):
+    day = datetime.datetime.strptime(dayString, "%Y-%m-%d")
+    print(day)
+    imageService.deleteDay(day)
+    return "OK"
 
 @app.route('/latest')
 @login_required

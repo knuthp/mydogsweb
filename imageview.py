@@ -1,6 +1,6 @@
 import dropbox
 from os import environ
-from datetime import datetime
+import datetime
 from dropbox.exceptions import ApiError
 import logging
 import re
@@ -38,7 +38,7 @@ class ImageService:
         dateRegex = '\d\d\d\d-\d\d-\d\d'
         files = self.dbx.files_list_folder('').entries
         dateStrings = [entry.name for entry in files if re.match(dateRegex, entry.name)]
-        dates = [datetime.strptime(dateString, "%Y-%m-%d") for dateString in dateStrings]
+        dates = [datetime.datetime.strptime(dateString, "%Y-%m-%d") for dateString in dateStrings]
         return dates
     
     def getImage(self, path):
@@ -50,8 +50,15 @@ class ImageService:
     def dateToIsoString(self, day):
         return str(day.year) + '-' + str(day.month).zfill(2) + '-' + str(day.day).zfill(2)
     
+    def deleteDay(self, day):
+        dayString = self.dateToIsoString(day)
+        try :
+            self.dbx.files_delete('/' + dayString)
+        except ApiError:
+            logging.warn("Not a valid day: %s", dayString)
+        
+    
 if __name__ == '__main__':
     imageService = ImageService()
-    print(imageService.getAvailableDates())
-    
-    print(imageService.getLatest()['path'])
+    day = datetime.date(2016, 8, 11)
+    imageService.deleteDay(day)
