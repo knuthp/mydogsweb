@@ -1,4 +1,4 @@
-from flask import Flask
+from flask import Flask, request
 from os import environ
 from flask_stormpath import StormpathManager
 from flask_stormpath import user
@@ -7,9 +7,10 @@ from flask_bootstrap import Bootstrap
 from flask.templating import render_template
 from flask_nav import Nav
 from flask_nav.elements import Navbar, View, Link, Subgroup
-from flask.helpers import send_file
 import imageview
 from flask.wrappers import Response
+import logging
+from dogcamsettings import DogCamSettings
 
 
 app = Flask(__name__)
@@ -28,6 +29,11 @@ bootstrap = Bootstrap(app)
 nav = Nav()
 nav.init_app(app)
 
+logging.getLogger().setLevel(logging.INFO)
+
+dogCamSettings = DogCamSettings()
+
+
 @nav.navigation()
 def mynavbar():
     return Navbar(
@@ -35,7 +41,7 @@ def mynavbar():
         View('Home', 'root'),
 #    View('Templates', 'jinja'),
     View('DogCam', 'dogcam'),
-#    View('Admin', 'admins_only'),
+    View('DogCam Settings', 'dogcamsettings'),
     Subgroup(userText(user),
         Link('Login', 'login'),
         Link('Logout', 'logout'))
@@ -62,6 +68,23 @@ def dogcam():
     images = [{'name' : 'myImageName2', 'dateTime' : '2016-08-09 13:32:24.1'}]
     return render_template('dogcam.html', images=images)
 
+
+@app.route('/dogcam/settings')
+@login_required
+def dogcamsettings():
+    return render_template('dogcamsettings.html')
+
+
+@app.route('/api/dogcam/settings/',  methods=['POST'])
+@login_required
+def apidogcamsettings():
+    record = (request.form.get('doRecord') == 'on')
+    interval = get_sec(request.form.get('interval'))
+    dogCamSettings.publishChanges({'doRecord' : record, 'interval' : interval})
+    logging.info("Updated settings doRecord={0}, interval={1}".format(record, interval))
+    return "OK"
+    
+
 @app.route('/latest')
 @login_required
 def latestImage():
@@ -71,6 +94,10 @@ def latestImage():
     print(len(data))
     return Response(data, mimetype='image/jpg')
     #return send_file('img.jpg', mimetype='image/jpg') 
+
+def get_sec(time_str):
+    h, m, s = time_str.split(':')
+    return int(h) * 3600 + int(m) * 60 + int(s)
 
 
 if __name__ == '__main__':
